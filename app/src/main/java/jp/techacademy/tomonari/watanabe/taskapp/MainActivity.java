@@ -1,14 +1,18 @@
 package jp.techacademy.tomonari.watanabe.taskapp;
 
+        import android.app.AlarmManager;
+        import android.app.PendingIntent;
         import android.content.DialogInterface;
         import android.content.Intent;
         import android.os.Bundle;
         import android.support.design.widget.FloatingActionButton;
-        import android.support.design.widget.Snackbar;
         import android.support.v7.app.AlertDialog;
         import android.support.v7.app.AppCompatActivity;
+        import android.util.Log;
         import android.view.View;
         import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.widget.EditText;
         import android.widget.ListView;
 
         import java.util.ArrayList;
@@ -35,19 +39,39 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
 
+    EditText msort;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        msort = (EditText) findViewById(R.id.Category);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+               Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                startActivity(intent);
             }
         });
+
+
+        Button fab2 = (Button) findViewById(R.id.fab2);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRealm = Realm.getDefaultInstance();
+                mTaskRealmResults = mRealm.where(Task.class).contains("category", msort.getText().toString()).findAll();
+                mTaskRealmResults.sort("date", Sort.DESCENDING);
+                mRealm.addChangeListener(mRealmListener);
+                reloadListView();
+            }
+        });
+
 
 
         mRealm = Realm.getDefaultInstance();
@@ -60,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter = new TaskAdapter(MainActivity.this);
         mListView = (ListView) findViewById(R.id.listView1);
 
+
+
         // ListViewをタップした時の処理
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 Task task = (Task) parent.getAdapter().getItem(position);
 
                 Intent intent = new Intent(MainActivity.this,InputActivity.class);
-                Intent.putExtra(EXTRA_TASK, task);
+                intent.putExtra(EXTRA_TASK, task);
 
 
                 startActivity(intent);
@@ -94,11 +120,24 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dailog, int which){
 
-                        RealmResults<Task> results = mRealm.where(Task.class).equalTo("id", task.getId()).findall();
+                        RealmResults<Task> results = mRealm.where(Task.class).equalTo("id", task.getId()).findAll();
 
                         mRealm.beginTransaction();
                         results.clear();
                         mRealm.commitTransaction();
+
+                        Intent resultIntent = new Intent(getApplicationContext(), TaskAlarmReceiver.class);
+                        PendingIntent resultPendingIntent = PendingIntent.getBroadcast(
+                                MainActivity.this,
+                                task.getId(),
+                                resultIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+
+                        );
+
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                        alarmManager.cancel(resultPendingIntent);
+
 
                         reloadListView();
                     }
@@ -123,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
         reloadListView();
     }
 
@@ -132,13 +172,15 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Task> taskArrayList = new ArrayList<>();
 
-        for (int i = 0; i < mTaskRealmResults.size(); i++){
+        for (int i = 0; i < mTaskRealmResults.size() ; i++){
 
             Task task = new Task();
+
 
             task.setId(mTaskRealmResults.get(i).getId());
             task.setTitle(mTaskRealmResults.get(i).getTitle());
             task.setContents(mTaskRealmResults.get(i).getContents());
+            task.setCategory(mTaskRealmResults.get(i).getCategory());
             task.setDate(mTaskRealmResults.get(i).getDate());
 
             taskArrayList.add(task);
@@ -149,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter.setTaskArrayList(taskArrayList);
         mListView.setAdapter(mTaskAdapter);
         mTaskAdapter.notifyDataSetChanged();
+
 
     }
 
@@ -162,8 +205,9 @@ public class MainActivity extends AppCompatActivity {
     private void addTaskForTest(){
 
         Task task = new Task();
-        task.setTitle("作業");
-        task.setContents("プログラムを書いてプッシュする");
+        task.setTitle("例");
+        task.setCategory("カテゴリ");
+        task.setContents("内容");
         task.setDate(new Date());
         task.setId(0);
         mRealm.beginTransaction();

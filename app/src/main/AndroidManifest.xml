@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.techacademy.tomonari.watanabe.taskapp">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:name=".TaskApp"
         android:allowBackup="true"
@@ -22,12 +24,15 @@
         <activity
             android:name=".InputActivity"
             android:label="タスク"
-            android:parentAcvityName=".MainActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.suppurt,PARENT_ACTIVITY"
-                android:value="jp.techacademy.tomonari.watanabe.taskapp.MainActivity"/>
+                android:value="jp.techacademy.tomonari.watanabe.taskapp.MainActivity" />
         </activity>
+        
+        <receiver android:name=".TaskAlarmReceiver"/>
+
     </application>
 
 </manifest>

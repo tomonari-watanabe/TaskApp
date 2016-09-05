@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:content="jp.techacademy.tomonari.watanabe.taskapp.InputActivity"
+    tools:context="jp.techacademy.tomonari.watanabe.taskapp.InputActivity"
     tools:showIn="@layout/activity_input">
 
     <EditText
@@ -19,12 +19,21 @@
         android:layout_height="wrap_content"
         android:hint="タイトル"/>
 
+
+    <EditText
+        android:id="@+id/category_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_edit_text"
+        android:hint="カテゴリ"/>
+
     <EditText
         android:id="@+id/content_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_edit_text"
+        android:layout_below="@id/category_edit_text"
         android:hint="内容"/>
+
 
 
     <Button

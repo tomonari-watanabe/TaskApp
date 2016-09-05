@@ -8,12 +8,47 @@
     android:fitsSystemWindows="true"
     tools:context="jp.techacademy.tomonari.watanabe.taskapp.MainActivity">
 
+
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="jp.techacademy.naoto.sakurai.taskapp.MainActivity">
+
+
+
+    <EditText
+        android:id="@+id/Category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:textSize="20sp"
+        android:textAlignment="center"
+    android:hint="カテゴリを入力して検索"/>
+
+    <Button
+        android:id="@+id/fab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_toRightOf="@+id/Category"
+        android:text="検索ボタン"
+        />
+
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fab2"
+        />
 
-
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -24,6 +59,8 @@
         android:src="@drawable/plus"
         app:backgroundTint="@color/colorPrimary"
         />
+
+
 
 
 </android.support.design.widget.CoordinatorLayout>
